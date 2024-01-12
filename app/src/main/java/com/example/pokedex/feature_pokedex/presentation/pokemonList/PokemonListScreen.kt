@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pokedex.R
+import com.example.pokedex.feature_pokedex.presentation.pokemonList.component.PokemonList
 import com.example.pokedex.feature_pokedex.presentation.pokemonList.component.SearchBar
 
 @Composable
@@ -44,6 +45,8 @@ fun PokemonListScreen(
             ) {
 
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            PokemonList(navController = navController)
         }
     }
 }

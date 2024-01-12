@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.pokedex.data.models.PokedexListEntry
 import com.example.pokedex.feature_pokedex.presentation.pokemonList.PokemonListViewModel
@@ -41,7 +42,7 @@ fun PokedexEntry(
     modifier: Modifier = Modifier,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
-    val defaultDominantColor = MaterialTheme.colorScheme.onSurface
+    val defaultDominantColor = MaterialTheme.colorScheme.surface
     var dominantColor by remember {
         mutableStateOf(defaultDominantColor)
     }
@@ -68,27 +69,30 @@ fun PokedexEntry(
             }
     ) {
         Column {
-            AsyncImage(
+            SubcomposeAsyncImage (
+                modifier = Modifier
+                    .size(120.dp)
+                    .align(Alignment.CenterHorizontally),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(entry.imageUrl)
                     .crossfade(true)
-                    .target{
-                           viewModel.calcDominantColor(it) { color ->
-                               dominantColor = color
-                           }
-                    }.build(),
+                    .build(),
                 contentDescription = "Image of ${entry.pokemonName}",
-                modifier = Modifier
-                    .size(120.dp)
-                    .align(Alignment.CenterHorizontally)
+                onSuccess = {
+                    viewModel.calcDominantColor(it.result.drawable) { color ->
+                        dominantColor = color
+                    }
+                },
+                loading = { CircularProgressIndicator() }
             )
-            Text(
-                text = entry.pokemonName,
-                fontFamily = RobotoCondensed,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = entry.pokemonName,
+                    fontFamily = RobotoCondensed,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
         }
     }
 }
